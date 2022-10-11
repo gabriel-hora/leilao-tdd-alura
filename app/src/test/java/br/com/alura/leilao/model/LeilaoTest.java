@@ -1,5 +1,7 @@
 package br.com.alura.leilao.model;
 
+import static org.junit.Assert.fail;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -142,21 +144,22 @@ public class LeilaoTest {
     @Test
     public void naoDeve_AdicionarLance_QuandoForMenorQueOMaiorLance() {
         console.propoe(new Lance(alex, 500.0));
-        console.propoe(new Lance(new Usuario("fran"), 400.0));
-
-        int quantidadeLancesDevolvida = console.quantidadeLances();
-
-        Assert.assertEquals(1, quantidadeLancesDevolvida);
+        try {
+            console.propoe(new Lance(new Usuario("fran"), 400.0));
+            fail("Era esperado uma RuntimeException");
+        } catch (RuntimeException e){
+            Assert.assertEquals("Lance foi menor que maior lance", e.getMessage());        }
     }
 
     @Test
     public void naoDeve_AdicionarLance_QuandoForOMesmoUsuarioDoUltimoLance() {
         console.propoe(new Lance(alex, 500.0));
-        console.propoe(new Lance(alex, 600.0));
-
-        int quantidadeLancesDevolvida = console.quantidadeLances();
-
-        Assert.assertEquals(1, quantidadeLancesDevolvida);
+        try {
+            console.propoe(new Lance(alex, 600.0));
+            fail("Era esperada uma RuntimeException");
+        }catch (RuntimeException e){
+            Assert.assertEquals("Mesmo usuário do ultimo lance", e.getMessage());
+        }
     }
 
     @Test
@@ -175,12 +178,11 @@ public class LeilaoTest {
 
         console.propoe(new Lance(alex, 900.0));
         console.propoe(new Lance(new Usuario("fran"), 1000.0));
-
-        console.propoe(new Lance(alex, 1100.0));
-        console.propoe(new Lance(new Usuario("fran"), 1200.0));
-
-        int quantidadeLancesDevolvida = console.quantidadeLances();
-
-        Assert.assertEquals(10, quantidadeLancesDevolvida);
+        try {
+            console.propoe(new Lance(alex, 1100));
+            fail("Era esperada uma RuntimeException");
+        } catch (RuntimeException e){
+            Assert.assertEquals("Usuario ja deu cinco lances", e.getMessage());
+        }
     }
 }
