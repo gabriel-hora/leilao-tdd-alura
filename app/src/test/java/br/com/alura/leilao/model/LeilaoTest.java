@@ -3,9 +3,15 @@ package br.com.alura.leilao.model;
 import static org.junit.Assert.fail;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.List;
+
+import br.com.alura.leilao.exception.LanceMenorQueUltimoLanceException;
+import br.com.alura.leilao.exception.LanceSeguidoDoMesmoUsuarioException;
+import br.com.alura.leilao.exception.UsuarioJaDeuCincoLancesException;
 
 public class LeilaoTest {
 
@@ -60,7 +66,7 @@ public class LeilaoTest {
     }
 
     @Test
-    public void deve_DevolverTresMaioresLances_QuantoRecebeExatosTresLances(){
+    public void deve_DevolverTresMaioresLances_QuantoRecebeExatosTresLances() {
         console.propoe(new Lance(alex, 200.0));
         console.propoe(new Lance(new Usuario("fran"), 300.0));
         console.propoe(new Lance(alex, 400.0));
@@ -75,14 +81,14 @@ public class LeilaoTest {
     }
 
     @Test
-    public void deve_DevolverTresMaioresLances_QuandoNaoRecebeLances(){
+    public void deve_DevolverTresMaioresLances_QuandoNaoRecebeLances() {
         List<Lance> tresMaioresLancesDevolvidos = console.tresMaioresLances();
 
         Assert.assertEquals(0, tresMaioresLancesDevolvidos.size());
     }
 
     @Test
-    public void deve_DevolverTresMaioresLances_QuandoRecebeApenasUmLance(){
+    public void deve_DevolverTresMaioresLances_QuandoRecebeApenasUmLance() {
         console.propoe(new Lance(alex, 200.0));
 
         List<Lance> tresMAioresLancesDevolvidos = console.tresMaioresLances();
@@ -92,7 +98,7 @@ public class LeilaoTest {
     }
 
     @Test
-    public void deve_DevolverTresMaioresLances_QuandoRecebeApeasDoisLances(){
+    public void deve_DevolverTresMaioresLances_QuandoRecebeApeasDoisLances() {
         console.propoe(new Lance(alex, 200.0));
         console.propoe(new Lance(new Usuario("fran"), 300));
 
@@ -141,28 +147,20 @@ public class LeilaoTest {
         Assert.assertEquals(0.0, menorLanceDevolvido, DELTA);
     }
 
-    @Test
+    @Test(expected = LanceMenorQueUltimoLanceException.class)
     public void naoDeve_AdicionarLance_QuandoForMenorQueOMaiorLance() {
         console.propoe(new Lance(alex, 500.0));
-        try {
-            console.propoe(new Lance(new Usuario("fran"), 400.0));
-            fail("Era esperado uma RuntimeException");
-        } catch (RuntimeException e){
-            Assert.assertEquals("Lance foi menor que maior lance", e.getMessage());        }
+        console.propoe(new Lance(new Usuario("Fran"), 400.0));
     }
 
-    @Test
+
+    @Test(expected = LanceSeguidoDoMesmoUsuarioException.class)
     public void naoDeve_AdicionarLance_QuandoForOMesmoUsuarioDoUltimoLance() {
         console.propoe(new Lance(alex, 500.0));
-        try {
-            console.propoe(new Lance(alex, 600.0));
-            fail("Era esperada uma RuntimeException");
-        }catch (RuntimeException e){
-            Assert.assertEquals("Mesmo usuário do ultimo lance", e.getMessage());
-        }
+        console.propoe(new Lance(alex, 600.0));
     }
 
-    @Test
+    @Test(expected = UsuarioJaDeuCincoLancesException.class)
     public void naoDeve_AdicionarLance_QuandoUsuarioDerCincoLance() {
         console.propoe(new Lance(alex, 100.0));
         console.propoe(new Lance(new Usuario("fran"), 200.0));
@@ -178,11 +176,7 @@ public class LeilaoTest {
 
         console.propoe(new Lance(alex, 900.0));
         console.propoe(new Lance(new Usuario("fran"), 1000.0));
-        try {
-            console.propoe(new Lance(alex, 1100));
-            fail("Era esperada uma RuntimeException");
-        } catch (RuntimeException e){
-            Assert.assertEquals("Usuario ja deu cinco lances", e.getMessage());
-        }
+
+        console.propoe(new Lance(alex, 1100));
     }
 }
