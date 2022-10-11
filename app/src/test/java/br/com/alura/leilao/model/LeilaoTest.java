@@ -1,7 +1,5 @@
 package br.com.alura.leilao.model;
 
-import junit.framework.TestCase;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,10 +13,8 @@ public class LeilaoTest {
 
     @Test
     public void deve_DevolveDescricao_QuandoRecebeDescricao() {
-        // executar ação esperada
         String descricaoDevolvida = console.getDescricao();
 
-        // testar resultado esperado
         Assert.assertEquals("Console", descricaoDevolvida);
     }
 
@@ -41,17 +37,6 @@ public class LeilaoTest {
         Assert.assertEquals(200.0, maiorLanceDevolvidoDoComputador, DELTA);
     }
 
-    @Test
-    public void deve_DevolveMaiorLance_QuandRecebeMaisDeUmLanceEmOrdemDecrescente() {
-        console.propoe(new Lance(alex, 10000.0));
-        console.propoe(new Lance(new Usuario("Fran"), 9000.0));
-
-        double maiorLanceDevolvidoDoCarro = console.getMaiorLance();
-
-        Assert.assertEquals(10000.0, maiorLanceDevolvidoDoCarro, DELTA);
-    }
-
-
     // Menores Lances
     @Test
     public void deve_DevolveMenorLance_QuandoRecebeApenasUmLance() {
@@ -70,16 +55,6 @@ public class LeilaoTest {
         double menorLanceDevolvido = console.getMenorLance();
 
         Assert.assertEquals(100.0, menorLanceDevolvido, DELTA);
-    }
-
-    @Test
-    public void deve_DevolveMenorLance_QuandRecebeMaisDeUmLanceEmOrdemDecrescente() {
-        console.propoe(new Lance(alex, 10000.0));
-        console.propoe(new Lance(new Usuario("Fran"), 9000.0));
-
-        double menorLanceDevolvido = console.getMenorLance();
-
-        Assert.assertEquals(9000.0, menorLanceDevolvido, DELTA);
     }
 
     @Test
@@ -148,5 +123,39 @@ public class LeilaoTest {
         Assert.assertEquals(700.0, tresMaioresLancesParaCincoLancesDevolvidos.get(0).getValor(), DELTA);
         Assert.assertEquals(600.0, tresMaioresLancesParaCincoLancesDevolvidos.get(1).getValor(), DELTA);
         Assert.assertEquals(500.0, tresMaioresLancesParaCincoLancesDevolvidos.get(2).getValor(), DELTA);
+    }
+
+    @Test
+    public void deve_DevolverValorZeroParaMaiorLance_QuandoNaoTiverLances() {
+        double maiorLanceDevolvido = console.getMaiorLance();
+
+        Assert.assertEquals(0.0, maiorLanceDevolvido, DELTA);
+    }
+
+    @Test
+    public void deve_DevolverValorZeroParaMenorLance_QuandoNaoTiverLances() {
+        double menorLanceDevolvido = console.getMenorLance();
+
+        Assert.assertEquals(0.0, menorLanceDevolvido, DELTA);
+    }
+
+    @Test
+    public void naoDeve_AdicionarLance_QuandoForMenorQueOMaiorLance() {
+        console.propoe(new Lance(alex, 500.0));
+        console.propoe(new Lance(new Usuario("fran"), 400.0));
+
+        int quantidadeLancesDevolvida = console.quantidadeLances();
+
+        Assert.assertEquals(1, quantidadeLancesDevolvida);
+    }
+
+    @Test
+    public void naoDeve_AdicionarLance_QuandoForOMesmoUsuarioDoUltimoLance() {
+        console.propoe(new Lance(alex, 500.0));
+        console.propoe(new Lance(alex, 600.0));
+
+        int quantidadeLancesDevolvida = console.quantidadeLances();
+
+        Assert.assertEquals(1, quantidadeLancesDevolvida);
     }
 }
